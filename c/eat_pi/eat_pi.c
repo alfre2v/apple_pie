@@ -3,8 +3,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
+
 
 #define PI 3.14159265358979323846
+
+#define ANCIENT_PI_PASSES 1000000000
 
 
 /*
@@ -24,7 +28,6 @@ double ancient_pi(double N) {
     for(int n=0; n<N; n++, divisor+=2) estimate +=  ((n % 2) ? -1 : 1) / divisor;
 
     return 4.0 * estimate;
-
 }
 
 
@@ -74,23 +77,48 @@ see: https://github.com/BaseMax/pi
 */
 
 
+int repeatMeassure(int n) {
+    double total_time = 0.0;
+    for (int i=0; i<n; ++i) {
+        clock_t begin = clock();
+        double a_pi = ancient_pi(ANCIENT_PI_PASSES - i);  // insignificant change in argument value to hopefully prevent compiler optimizations
+        clock_t end = clock();
+        double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+        printf("run #%d: ancient_pi=%f, clock_time_spent=%f secs\n", i+1, a_pi, time_spent);
+        total_time += time_spent;
+    }
+    printf("ancient_pi %d rounds finished in total clock time: %f secs\n\n", n, total_time);
+}
+
+
+
 int main(int argc, char const *argv[])
 {
-
+    int n_repeat = 1;
+    int default_repeat = 1;
     // double accuracy = (argc == 2) ? atof(argv[1]) : precission;
 
-    winter_pi();
+    if ((argc>2)||((argc==2)&&((strcmp(argv[1], "-h")==0)||(strcmp(argv[1], "--help")==0)))) {
+        printf("\n\n--------------------------------------------------------------------------------------\n");
+        printf("This program calculates PI in a ridiculously slow way in order to stress the CPU with floating point operations");
+        printf("\n--------------------------------------------------------------------------------------\n\n");
+        printf("But to not leave anybody wanting for PI:\nHere are 800 digits of PI calculated with black magic by mathematician Dik T. Winter:\n");
 
-    printf("\n\n------------------------------------------------\n\n");
+        winter_pi();
 
-    clock_t begin = clock();
+        printf("\n\nHow to use this program:\n");
+        printf("\tRun computation:\t%s [n_repeat]\n", argv[0]);
+        printf("\tGet help message:\t%s --help|-h\n", argv[0]);
+        printf("\t\t-If argument n_repeat is not provided it is assumed to be %d\n\n", default_repeat);
 
-    printf("ancient_pi=%f\n", ancient_pi(1000000000));
+        exit(1);
+    }
 
-    clock_t end = clock();
-    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    n_repeat = (argc == 2) ? atoi(argv[1]) : default_repeat;
 
-    printf("ancient_pi clock time spent: %f secs\n\n", time_spent);
+    printf("\n\n-------- Running PI computation with acient PI method repeated %d times ---------------------------\n\n", n_repeat);
+
+    repeatMeassure(n_repeat);
 
     return 0;
 }

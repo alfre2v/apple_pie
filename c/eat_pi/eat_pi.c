@@ -77,7 +77,7 @@ see: https://github.com/BaseMax/pi
 */
 
 
-int repeatMeassure(int n) {
+int repeatMeasure(int n) {
     double total_time = 0.0;
     for (int i=0; i<n; ++i) {
         clock_t begin = clock();
@@ -118,7 +118,7 @@ int main(int argc, char const *argv[])
 
     printf("\n\n-------- Running PI computation with acient PI method repeated %d times ---------------------------\n\n", n_repeat);
 
-    repeatMeassure(n_repeat);
+    repeatMeasure(n_repeat);
 
     return 0;
 }
